@@ -1,0 +1,78 @@
+version: '2'
+
+services:
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    env_file:
+      - ./docker_env.cfg
+
+  rabbitmq:
+    image: rabbitmq
+    networks:
+      - default
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file:
+      - ./docker_env.cfg
+
+
+  consumer:
+    build: consumer/
+    volumes:
+      - ./:/code
+    links:
+      - rabbitmq
+    depends_on:
+      - rabbitmq
+      - mongo
+    networks:
+      - default
+    environment:
+      - PYTHONUNBUFFERED=0
+
+  hook:
+    build: facebookHook/
+    ports:
+      - "5013:5013"
+    volumes:
+      - ./:/code
+    links:
+      - rabbitmq
+    depends_on:
+      - rabbitmq
+      - mongo
+    networks:
+      - default
+    environment:
+      - PYTHONUNBUFFERED=0
+
+  localhook:
+    build: localHook/
+    ports:
+      - "5044:5044"
+    volumes:
+      - ./:/code
+    links:
+      - rabbitmq
+    depends_on:
+      - rabbitmq
+      - mongo
+    networks:
+      - default
+    environment:
+      - PYTHONUNBUFFERED=0
+
+  mediaserver:
+    build: mediaServer/
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./:/code
+    networks:
+      - default
+    environment:
+      - PYTHONUNBUFFERED=0

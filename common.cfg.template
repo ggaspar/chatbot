@@ -1,0 +1,14 @@
+[broker]
+server = rabbitmq
+queue_name = messages
+
+[NLU]
+access_token = [token]
+engine = APIAI
+minimum_confidence = 0.5
+
+[facebook]
+access_key = [access_key]
+
+[consumer]
+attempts_to_connect = 5

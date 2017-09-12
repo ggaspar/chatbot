@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link type="text/css" rel="stylesheet" href="style.css" />
+  </head>
+
+<body>
+
+<div id="wrapper">
+    <div id="menu">
+        <p class="welcome">Equancy Chatbot Emulator<b></b></p>
+        <div style="clear:both"></div>
+    </div>
+
+    <div class="links">
+        <a href="http://localhost:15672/">RabbitMQ</a>
+    </div>
+    <div id="chatbox"></div>
+
+    <form id="chat-form" name="message" action="">
+        <input name="usermsg" type="text" id="usermsg" size="63" />
+        <input name="submitmsg" type="submit"  id="submitmsg" value="Send" />
+    </form>
+    <div class="context">Context: (Not yet implemented)</div>
+</div>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
+<script>
+    var ws = new WebSocket("ws://localhost:5044/");
+    ws.onmessage = function (event) {
+        $('#chatbox').append('<p class="bot-answer">' + event.data + "<p>");
+        var elm = document.getElementById("chatbox");
+        elm.scrollTop = elm.scrollHeight;
+
+    };
+
+    $('#chat-form').submit(
+        function(e){
+            var msg = $( "#usermsg" ).val();
+            $('#chatbox').append('<p class="human-answer">' + msg + "<p>");
+            ws.send(msg);
+            event.preventDefault();
+            $( "#usermsg" ).val("");
+            var elm = document.getElementById("chatbox");
+            elm.scrollTop = elm.scrollHeight;
+
+        }
+    );
+
+    ws.onclose = function(evt) {
+      alert("socket closed");
+    };
+</script>
+
+</body>
+</html>
